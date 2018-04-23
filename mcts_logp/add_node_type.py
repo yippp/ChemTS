@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 from keras.preprocessing import sequence
 from rdkit import Chem
@@ -13,11 +14,9 @@ def expanded_node(model, state, val):
 
     position = []
     position.extend(state)
-    get_int_old = []
+    get_int = []
     for j in range(len(position)):
-        get_int_old.append(val.index(position[j]))
-
-    get_int = get_int_old
+        get_int.append(val.index(position[j]))
 
     x = np.reshape(get_int, (1, len(get_int)))
     x_pad = sequence.pad_sequences(x, maxlen=81, dtype='int32',
@@ -35,7 +34,7 @@ def expanded_node(model, state, val):
 
     all_nodes = list(set(all_nodes))
 
-    print('all nodes:', all_nodes)
+    # print('all nodes:', all_nodes)
 
     return all_nodes
 
@@ -45,7 +44,7 @@ def node_to_add(all_nodes, val):
     for i in range(len(all_nodes)):
         added_nodes.append(val[all_nodes[i]])
 
-    print('added notes: ', added_nodes)
+    # print('added notes: ', added_nodes)
 
     return added_nodes
 
@@ -62,11 +61,9 @@ def chem_kn_simulation(model, state, val, added_nodes):
         # print(position)
         # print(len(val2))
         total_generated = []
-        get_int_old = []
+        get_int = []
         for j in range(len(position)):
-            get_int_old.append(val.index(position[j]))
-
-        get_int = get_int_old
+            get_int.append(val.index(position[j]))
 
         x = np.reshape(get_int, (1, len(get_int)))
         x_pad = sequence.pad_sequences(x, maxlen=81, dtype='int32',
@@ -111,11 +108,7 @@ def predict_smile(all_posible, val):
 def make_input_smile(generate_smile):
     new_compound = []
     for i in range(len(generate_smile)):
-        middle = []
-        for j in range(len(generate_smile[i])):
-            middle.append(generate_smile[i][j])
-        com = ''.join(middle)
-        new_compound.append(com)
+        new_compound.append(''.join(generate_smile[i]))
     # print(new_compound)
     # print(len(new_compound))
 
@@ -125,22 +118,19 @@ def make_input_smile(generate_smile):
 def check_node_type(new_compound, SA_mean, SA_std, logP_mean, logP_std, cycle_mean, cycle_std):
     node_index = []
     valid_compound = []
-    all_smile = []
-    # print("SA_mean:",SA_mean)
-    # print("SA_std:",SA_std)
-    # print("logP_mean:",logP_mean)
-    # print("logP_std:",logP_std)
-    # print("cycle_mean:",cycle_mean)
-    # print("cycle_std:",cycle_std)
     score = []
 
     for i in range(len(new_compound)):
         try:
             m = Chem.MolFromSmiles(str(new_compound[i]))
         except:
-            print(None)
+            None
+
         if m != None and len(new_compound[i]) <= 81:
-            logp = Descriptors.MolLogP(m)
+            try:
+                logp = Descriptors.MolLogP(m)
+            except ValueError:  # habdle Sanitization error: Explicit valence for atom is greater than permitted
+                continue
             node_index.append(i)
             valid_compound.append(new_compound[i])
             SA_score = -sascorer.calculateScore(MolFromSmiles(new_compound[i]))
@@ -163,6 +153,4 @@ def check_node_type(new_compound, SA_mean, SA_std, logP_mean, logP_std, cycle_me
             score_one = SA_score_norm + logp_norm + cycle_score_norm
             score.append(score_one)
 
-        all_smile.append(new_compound[i])
-
-    return node_index, score, valid_compound, all_smile
+    return node_index, score, valid_compound

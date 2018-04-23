@@ -47,7 +47,8 @@ def zinc_processed_with_bracket(sen_space):
         length.append(len1)
         all_smile.append(list(word))
     # print(all_smile)
-    val = ["\n"]
+    # val = ["\n"]
+    val = []
     for i in range(len(all_smile)):
         for j in range(len(all_smile[i])):
             if all_smile[i][j] not in val:

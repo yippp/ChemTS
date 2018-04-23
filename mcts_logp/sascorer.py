@@ -1,26 +1,10 @@
-#
-# calculation of synthetic accessibility score as described in:
-#
-# Estimation of Synthetic Accessibility Score of Drug-like Molecules based on Molecular Complexity and Fragment Contributions
-# Peter Ertl and Ansgar Schuffenhauer
-# Journal of Cheminformatics 1:8 (2009)
-# http://www.jcheminf.com/content/1/1/8
-#
-# several small modifications to the original paper are included
-# particularly slightly different formula for marocyclic penalty
-# and taking into account also molecule symmetry (fingerprint density)
-#
-# for a set of 10k diverse molecules the agreement between the original method
-# as implemented in PipelinePilot and this implementation is r2 = 0.97
 from __future__ import print_function
 
 from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors
 from rdkit.six.moves import cPickle
 from rdkit.six import iteritems
-
 import math
-
 import os.path as op
 
 _fscores = None
@@ -40,7 +24,7 @@ def readFragmentScores(name='fpscores'):
     _fscores = outDict
 
 
-def numBridgeheadsAndSpiro(mol, ri=None):
+def numBridgeheadsAndSpiro(mol):
     nSpiro = rdMolDescriptors.CalcNumSpiroAtoms(mol)
     nBridgehead = rdMolDescriptors.CalcNumBridgeheadAtoms(mol)
     return nBridgehead, nSpiro
@@ -64,7 +48,7 @@ def calculateScore(m):
     nAtoms = m.GetNumAtoms()
     nChiralCenters = len(Chem.FindMolChiralCenters(m, includeUnassigned=True))
     ri = m.GetRingInfo()
-    nBridgeheads, nSpiro = numBridgeheadsAndSpiro(m, ri)
+    nBridgeheads, nSpiro = numBridgeheadsAndSpiro(m)
     nMacrocycles = 0
     for x in ri.AtomRings():
         if len(x) > 8: nMacrocycles += 1
@@ -130,34 +114,3 @@ if __name__ == '__main__':
     t4 = time.time()
 
     print('Reading took %.2f seconds. Calculating took %.2f seconds' % ((t2 - t1), (t4 - t3)), file=sys.stderr)
-
-#
-#  Copyright (c) 2013, Novartis Institutes for BioMedical Research Inc.
-#  All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met: 
-#
-#     * Redistributions of source code must retain the above copyright 
-#       notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
-#       copyright notice, this list of conditions and the following 
-#       disclaimer in the documentation and/or other materials provided 
-#       with the distribution.
-#     * Neither the name of Novartis Institutes for BioMedical Research Inc. 
-#       nor the names of its contributors may be used to endorse or promote 
-#       products derived from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#

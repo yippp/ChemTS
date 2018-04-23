@@ -35,14 +35,14 @@ def save_model(model):
         json_file.write(model_json)
     # serialize weights to HDF5
     model.save_weights("model.h5")
-    print("Saved model to disk")
+    print "Saved model to disk"
 
 
 if __name__ == "__main__":
     smile = zinc_data_with_bracket_original()
     valcabulary, all_smile = zinc_processed_with_bracket(smile)
-    print(valcabulary)
-    print(len(all_smile))
+    print "valcabulary:", valcabulary
+    print "number of all smiles:",len(all_smile)
     X_train, y_train = prepare_data(valcabulary, all_smile)
 
     maxlen = 81
@@ -53,7 +53,7 @@ if __name__ == "__main__":
                                padding='post', truncating='pre', value=0.)
 
     y_train_one_hot = np.array([to_categorical(sent_label, num_classes=len(valcabulary)) for sent_label in y])
-    print(y_train_one_hot.shape)
+    print y_train_one_hot.shape
 
     vocab_size = len(valcabulary)
     embed_size = len(valcabulary)
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     model.add(Dropout(0.2))
     model.add(TimeDistributed(Dense(embed_size, activation='softmax')))
     optimizer = Adam(lr=0.01)
-    print(model.summary())
+    print model.summary()
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     model.fit(X, y_train_one_hot, nb_epoch=100, batch_size=512, validation_split=0.1)
     save_model(model)

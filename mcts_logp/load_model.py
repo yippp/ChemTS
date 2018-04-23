@@ -9,6 +9,6 @@ def loaded_model():
 
     # load weights into new model
     loaded_model.load_weights('../RNN-model/model.h5')
-    print("Loaded model from disk")
+    print "Loaded model from disk"
 
     return loaded_model
