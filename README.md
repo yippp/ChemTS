@@ -3,7 +3,6 @@
 1. [Python](https://www.anaconda.com/download/)>=2.7 
 2. [Keras](https://github.com/fchollet/keras) (version 2.0.5) If you installed the newest version of keras, some errors will show up. Please change it back to keras 2.0.5 by pip install keras==2.0.5. 
 3. [rdkit](https://anaconda.org/rdkit/rdkit)
-4. [rDock](http://rdock.sourceforge.net/installation/)
 
 ##  Train a RNN model for molecule generation
 1. cd train_RNN
