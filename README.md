@@ -1,6 +1,7 @@
 # ChemTS
+A version edited from https://github.com/tsudalab/ChemTS
 ##  Requirements 
-1. [Python](https://www.anaconda.com/download/)>=2.7 
+1. [Python](https://www.anaconda.com/download/)>=2.7
 2. [Keras](https://github.com/fchollet/keras) (version 2.0.5) If you installed the newest version of keras, some errors will show up. Please change it back to keras 2.0.5 by pip install keras==2.0.5. 
 3. [rdkit](https://anaconda.org/rdkit/rdkit)
 
